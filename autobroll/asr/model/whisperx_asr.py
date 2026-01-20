@@ -1,8 +1,8 @@
-from typing import Optional, Dict, Any
+from typing import Optional, List
 import whisperx
 
 from autobroll.asr.base import BaseASR
-from autobroll.asr.schema import AudioData
+from autobroll.asr.schema import AudioData,  ASRWord, ASRSegment, ASRResult
 
 class WhisperXASR(BaseASR):
     """
@@ -43,7 +43,7 @@ class WhisperXASR(BaseASR):
     def transcribe(
         self,
         audio: AudioData,
-    ) -> Dict[str, Any]:
+    ) -> ASRResult:
         """
         Transcribe audio using WhisperX.
 
@@ -51,7 +51,7 @@ class WhisperXASR(BaseASR):
             audio (AudioData): Input audio data.
         
         Returns:
-            Dict[str, Any]: Transcription result containing:
+            ASRResult:
                 - language: detected or specified language
                 - segments: aligned transcription segments with timestamps
         """
@@ -84,7 +84,29 @@ class WhisperXASR(BaseASR):
             device=self.device,
         )
 
-        return {
-            "language": result["language"],
-            "segments": aligned["segments"],
-        }
+        segments: List[ASRSegment] = []
+        for seg in aligned.get("segments", []):
+            words = None
+            if "words" in seg and seg["words"]:
+                words = [
+                    ASRWord(
+                        text=w["word"],
+                        start=w["start"],
+                        end=w["end"],
+                        confidence=w.get("score"),
+                    )
+                    for w in seg["words"]
+                ]
+            segments.append(
+                ASRSegment(
+                    text=seg["text"].strip(),
+                    start=seg["start"],
+                    end=seg["end"],
+                    words=words,
+                )
+            )
+
+        return ASRResult(
+            language=result.get("language"),
+            segments=segments,
+        )
