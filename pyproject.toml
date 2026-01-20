@@ -13,7 +13,9 @@ dependencies = [
     "whisperx (>=3.7.4,<4.0.0)",
     "ffmpeg-python (>=0.2.0,<0.3.0)",
     "whisper (>=1.1.10,<2.0.0)",
-    "openai-whisper (>=20250625,<20250626)"
+    "openai-whisper (>=20250625,<20250626)",
+    "torch (==2.8.0)",
+    "torchaudio (==2.8.0)"
 ]
 
 

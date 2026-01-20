@@ -12,7 +12,7 @@ class WhisperXASR(BaseASR):
         self,
         model_name: str = "large-v2",
         device: str = "cpu",
-        compute_type: str = "float16",
+        compute_type: str = "float32",
         language: Optional[str] = None,
         batch_size: int = 16
     ):
@@ -80,7 +80,6 @@ class WhisperXASR(BaseASR):
             align_model,
             metadata,
             waveform,
-            sample_rate,
             device=self.device,
         )
 
